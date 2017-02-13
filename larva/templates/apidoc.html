@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>SB Admin - Bootstrap Admin Template</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="/static/css/sb-admin.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/static/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+     <!-- jQuery -->
+    <script src="/static/js/jquery.js"></script>
+    <script src="/static/js/jquery.serialize-object.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="/static/js/bootstrap.min.js"></script>
+    <style>
+        .anchor{
+            display: block;
+            height: 50px; /*same height as header*/
+            margin-top: -50px; /*same height as header*/
+            visibility: hidden;
+        }
+    </style>
+
+    <![endif]-->
+
+</head>
+
+<body style="top: 60;">
+
+    <div id="wrapper">
+
+        <!-- Navigation -->
+        <nav class="navbar navbar-collapse navbar-inverse navbar-fixed-top" role="navigation">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">Promise Larva JSON-RPC</a>
+            </div>
+        <!-- Top Menu Items -->
+
+            <ul class="nav navbar-right top-nav">
+                <li>
+                    <script type="text/javascript">
+                        $(function() {
+                            $("#login").submit(function(e) {
+                                e.preventDefault();
+                                var username = $(this).find("#username").val();
+                                var password = $(this).find("#password").val();
+                                $.ajax({
+                                    url: "/auth",
+                                    type: 'post',
+                                    async: false,
+                                    username: username,
+                                    password: password,
+                                    success: function(text) {
+                                        token = text;
+                                        $("#login").find(":input").fadeOut();
+                                        $("#show_username").text(username);
+                                    },
+                                });
+                            });
+                            $("#logout").click(function(e) {
+                                e.preventDefault();
+                                $("#login").find(":input").fadeIn();
+                                $("#show_username").text("anonymous");
+                                token = "";
+                            });
+                        });
+                    </script>
+                    <form class="navbar-form navbar-right top-nav" name="cookieform" id="login" method="post">
+                        <div class="form-group"><input class="form-control" type="text" name="username" id="username" class="text"/></div>
+                        <div class="form-group"><input class="form-control" type="password" name="password" id="password" class="text"/></div>
+                        <div class="form-group"><input class="form-control" type="submit" name="sub" value="Login" class="page"/></div>
+                    </form>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bell"></i> <b class="caret"></b></a>
+                    <ul class="dropdown-menu alert-dropdown event-notify">
+                        <script type="text/javascript">
+                            $(function() {
+                                $("ul.event-notify").empty();
+                                var actionurl = "/api/event/get_event";
+                                var DataObj = {"date": "{{ time }}", "limit": 5};
+                                token = "";
+                                var poll_log = function () {
+                                    $.ajax({
+                                        url: actionurl,
+                                        type: 'post',
+                                        dataType: 'json',
+                                        contentType: "application/json",
+                                        data: JSON.stringify(DataObj),
+                                        headers: {
+                                            'Authorization': "Token " + token,
+                                        },
+                                        success: function (data, status) {
+                                            var $ul = $("ul.event-notify");
+                                            $ul.empty();
+                                            var log_list = data.data;
+                                            var log_level = ["label-danger", "label-danger", "label-warning", "label-info", "label-default"]
+
+                                            for (var m in log_list) {
+                                                log = log_list[m];
+                                                var $li = document.createElement( "li" );
+                                                var $a = document.createElement( "a" );
+                                                var $span = document.createElement( "span" );
+                                                $a.innerHTML = log.message;
+                                                $span.className = "label "+log_level[log.level];
+                                                $span.innerHTML = log.title;
+                                                $a.prepend($span);
+                                                $li.append($a);
+                                                $ul.append($li);
+                                            }
+                                        },
+                                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+                                        }
+                                    });
+                                }
+                                setInterval(poll_log, 50000);
+                            });
+                        </script>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-envelope"></i> <b class="caret"></b></a>
+                    <ul class="dropdown-menu message-dropdown">
+                        <script type="text/javascript">
+                            $(function() {
+                                $("li.message-preview").hide();
+                                var actionurl = "/api/event/get_event";
+                                var DataObj = {"date": "{{ time }}", "limit": 5};
+                                token = "";
+                                var poll_log = function () {
+                                    $.ajax({
+                                        url: actionurl,
+                                        type: 'post',
+                                        dataType: 'json',
+                                        contentType: "application/json",
+                                        data: JSON.stringify(DataObj),
+                                        headers: {
+                                            'Authorization': "Token " + token,
+                                        },
+                                        success: function (data, status) {
+                                            var $li = $("li.message-preview:first");
+                                            var log_list = data.data;
+                                            $("li.message-preview").hide();
+                                            for (var m in log_list) {
+                                                log = log_list[m];
+                                                $li.find('h5.media-heading').find('strong').text(log.title);
+                                                $li.find('p.small').text(log.date);
+                                                $li.find('p').next().text(log.message);
+                                                $li.show();
+                                                $li = $li.next();
+                                            }
+                                        },
+                                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+                                        }
+                                    });
+                                }
+                                setInterval(poll_log, 50000);
+                            });
+                        </script>
+                        <li class="message-preview">
+                            <a href="#">
+                                <div class="media">
+                                    <span class="pull-left">
+                                        <img class="media-object" src="http://placehold.it/50x50" alt="">
+                                    </span>
+                                    <div class="media-body">
+                                        <h5 class="media-heading">
+                                            <strong>John</strong>
+                                        </h5>
+                                        <p class="small text-muted"><i class="fa fa-clock-o"></i> Yesterday at 4:32 PM</p>
+                                        <p>Lorem ipsum dolor sit amet, consectetur...</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="message-preview">
+                            <a href="#">
+                                <div class="media">
+                                    <span class="pull-left">
+                                        <img class="media-object" src="http://placehold.it/50x50" alt="">
+                                    </span>
+                                    <div class="media-body">
+                                        <h5 class="media-heading">
+                                            <strong>John</strong>
+                                        </h5>
+                                        <p class="small text-muted"><i class="fa fa-clock-o"></i> Yesterday at 4:32 PM</p>
+                                        <p>Lorem ipsum dolor sit amet, consectetur...</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="message-preview">
+                            <a href="#">
+                                <div class="media">
+                                    <span class="pull-left">
+                                        <img class="media-object" src="http://placehold.it/50x50" alt="">
+                                    </span>
+                                    <div class="media-body">
+                                        <h5 class="media-heading">
+                                            <strong>John</strong>
+                                        </h5>
+                                        <p class="small text-muted"><i class="fa fa-clock-o"></i> Yesterday at 4:32 PM</p>
+                                        <p>Lorem ipsum dolor sit amet, consectetur...</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="message-footer">
+                            <a href="#">Read All New Messages</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="dropdown" id="login-menu">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> <span id="show_username">anonymous</span> <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="#"><i class="fa fa-fw fa-user"></i> Profile</a>
+                        </li>
+                        <li>
+                            <a href="#"><i class="fa fa-fw fa-envelope"></i> Inbox</a>
+                        </li>
+                        <li>
+                            <a href="#"><i class="fa fa-fw fa-gear"></i> Settings</a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#" id="logout"><i class="fa fa-fw fa-power-off"></i> Logout</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
+            <div class="collapse navbar-collapse navbar-ex1-collapse">
+                <ul class="nav navbar-nav side-nav">
+                    {%for object in doc%}
+                    <li>
+                        <a href="javascript:;" data-toggle="collapse" data-target="#{{object}}"><i class="fa fa-fw fa-plus-square"></i> {{object}} <i class="fa fa-fw fa-caret-down"></i></a>
+                        <ul id="{{object}}" class="collapse">
+                            {% for method in doc[object] %}
+                            <li>
+                                <a href="#anchor_{{object}}_{{method}}">{{method}}</a>
+                            </li>
+                            {%endfor%}
+                        </ul>
+                    </li>
+                    {%endfor%}
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </nav>
+
+        <div id="page-wrapper">
+
+            <div class="container-fluid">
+
+                <!-- Page Heading -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1 class="page-header">
+                            Function
+                            <small></small>
+                        </h1>
+                        {%for object in doc%}
+                        <div class="col-sm-9 col-md-10 main">
+                            <h2><span class="label label-primary">{{object}}</span></h2>
+                            <div class="panel panel-success">
+                                {% for method in doc[object] %}
+                                <div class="anchor" id="anchor_{{object}}_{{method}}"></div>
+                                <div class="panel-heading">
+                                    <h3><span class="label label-success">
+                                    <b>
+                                        {{method}}(
+                                        {% for name in doc[object][method].Args %}
+                                            {% set field = doc[object][method].Args[name] %}
+                                        {% if field.default %}
+                                            {{name}}={{field.default}}
+                                        {%else%}
+                                            {{name}}
+                                        {%endif%}
+                                        {% if loop.last %}
+
+                                        {%else%}
+                                            ,&nbsp;
+                                        {%endif%}
+                                        {%endfor%}
+                                        )
+                                    </b>
+                                    </span></h3>
+                                    <h4><span><i>{{doc[object][method].description}}</i></span></h4>
+
+                                </div>
+                                <div class="panel-body"  id="panel_{{object}}_{{method}}">
+                                    <div class="table-responsive">
+                                        <h4 class="sub-header">Parameters</h4>
+                                        <form id="testForm_{{object}}_{{method}}" class="form-inline" method="post" role="form" action="/api/{{object}}/{{method}}">
+                                        <table class="table table-striped table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Field</th>
+                                                    <th>Type</th>
+                                                    <th>Default</th>
+                                                    <th>Description</th>
+                                                    <th>input</th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody>
+                                                <div class="form-group">
+                                                {% for name in doc[object][method].Args %}
+                                                    {% set field = doc[object][method].Args[name] %}
+                                                <tr>
+                                                    <td class="info">{{name}}</td>
+                                                    <td class="info">{{field.type}}</td>
+                                                    <td class="info">{{field.default}}</td>
+                                                    <td class="info" style='white-space:pre'>{{field.description}}</td>
+                                                    <td class="info">
+                                                        <div class="col-md-3">
+                                                            <input type="{{ field.htmltype }}" class="form-control" name="{{name}}" value=
+                                                            {% if field.type == "datetime" and not field.default %}
+                                                                "{{ time }}"
+                                                            {% else %}
+                                                                "{{field.default}}"
+                                                            {% endif %}
+
+                                                            {% if field.type == "boolean" and field.default %}
+                                                                checked
+                                                            {%endif%}
+                                                            >
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                {%endfor%}
+                                                </div>
+                                            </tbody>
+                                        </table>
+                                            <button type="submit" class="btn btn-primary pull-right">Test</button>
+                                            <script type="text/javascript">
+                                                $(function() {
+                                                    //hang on event of form with id=myform
+                                                    $(".result").hide();
+                                                    token = "";
+                                                    default_pre_color = $("#panel_{{object}}_{{method}} > pre").css("background-color");
+                                                    $("#testForm_{{object}}_{{method}}").submit(function(e) {
+                                                        //prevent Default functionality
+                                                        e.preventDefault();
+                                                        $(".result").fadeOut();
+
+                                                        //get the action-url of the form
+                                                        var actionurl = e.currentTarget.action;
+                                                        var formJqObj = $("#testForm_{{object}}_{{method}}");
+                                                        var formDataObj = {};
+
+                                                        formJqObj.find(":input").not("[type='submit']").not("[type='reset']").each(function(){
+                                                        var thisInput = $(this);
+                                                        if (thisInput.attr('type') == "number") {
+                                                            formDataObj[thisInput.attr("name")] = parseInt(thisInput.val());
+                                                        }
+                                                        else if (thisInput.attr('type') == 'checkbox'){
+                                                            if (thisInput.val() == "True") {
+                                                                formDataObj[thisInput.attr("name")] = true;
+                                                            }
+                                                            else{
+                                                                formDataObj[thisInput.attr("name")] = false;
+                                                            }
+                                                        }
+                                                        else{
+                                                            formDataObj[thisInput.attr("name")] = thisInput.val();
+                                                        }
+                                                        });
+
+                                                        //do your own request an handle the results
+                                                        var input_data = JSON.stringify(formDataObj, null, "  ");
+                                                        $.ajax({
+                                                            url: actionurl,
+                                                            type: 'post',
+                                                            dataType: 'json',
+                                                            contentType: "application/json",
+                                                            data: input_data,
+                                                            headers: {
+                                                                'Authorization' : "Token "+token,
+                                                            },
+                                                            success: function(data, status) {
+                                                                var json_data = JSON.stringify(data, null, "   ");
+                                                                $("#input_{{object}}_{{method}}").text(input_data);
+                                                                $("#answer_{{object}}_{{method}}").text(json_data);
+                                                                $("#panel_{{object}}_{{method}} > h4").fadeIn();
+                                                                $("#panel_{{object}}_{{method}} > pre").fadeIn();
+                                                                if (data.status) {
+                                                                    $("#panel_{{object}}_{{method}} > pre").css("background-color", default_pre_color);
+                                                                }
+                                                                else {
+                                                                    $("#panel_{{object}}_{{method}} > pre").css("background-color", "MistyRose");
+                                                                }
+                                                            },
+                                                            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                                                                var input_data = JSON.stringify(formDataObj, null, "   ");
+                                                                $("#input_{{object}}_{{method}}").text(input_data);
+                                                                $("#answer_{{object}}_{{method}}").text(JSON.stringify(XMLHttpRequest,  null, "   "));
+                                                                $("#panel_{{object}}_{{method}} > h4").fadeIn();
+                                                                $("#panel_{{object}}_{{method}} > pre").fadeIn();
+                                                                $("#panel_{{object}}_{{method}} > pre").css("background-color", "MistyRose");
+                                                            }
+                                                        });
+                                                    });
+                                                });
+                                            </script>
+                                        </form>
+
+                                        <h4 class="sub-header">Return</h4>
+                                        <table class="table table-striped table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Field</th>
+                                                    <th>Type</th>
+                                                    <th>Default</th>
+                                                    <th>Description</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for field in doc[object][method].Returns%}
+                                                <tr>
+                                                    <td class="warning">{{field.name}}</td>
+                                                    <td class="warning">{{field.type}}</td>
+                                                    <td class="warning">{{field.default}}</td>
+                                                    <td class="warning" style='white-space:pre'>{{field.description}}</td>
+                                                </tr>
+                                                {%endfor%}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <h4 class="sub-header result">JSON Input</h4>
+                                    <pre class="result" id="input_{{object}}_{{method}}"></pre>
+                                    <h4 class="sub-header result">JSON Output</h4>
+                                    <pre class="result" id="answer_{{object}}_{{method}}"></pre>
+                                </div>
+                                {%endfor%}
+                            </div>
+                        </div>
+                        {%endfor%}
+                    </div>
+                </div>
+                <!-- /.row -->
+
+            </div>
+            <!-- /.container-fluid -->
+
+        </div>
+        <!-- /#page-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+
+
+
+</body>
+
+</html>

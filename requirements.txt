@@ -1,0 +1,8 @@
+flask == 0.12
+python-dateutil == 2.6.0
+sqlalchemy == 1.1.5
+flask_httpauth == 3.2.2
+python-pam == 1.8.2
+gunicorn == 19.6.0
+gevent == 1.2.1
+decorator == 4.0.11
