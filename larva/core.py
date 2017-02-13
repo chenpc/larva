@@ -30,7 +30,8 @@ function_inspect_table = OrderedDict()
 
 
 def parse_doc(function):
-    htmltype = {"str": "text", "int": "number", "boolean": "checkbox", "datetime": "datetime-local"}
+    htmltype = {"str": "text", "int": "number", "boolean": "checkbox", "datetime": "datetime-local",
+                "list": "text"}
     result = OrderedDict()
     sep_data = function.__doc__.splitlines() # XXX expandtab??
     args, varg, karg, defaults = (inspect.getargspec(function))
