@@ -6,7 +6,6 @@ from setuptools import setup, find_packages
 # To use a consistent encoding
 from codecs import open
 from os import path
-
 here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the README file
@@ -53,8 +52,7 @@ setup(
     # installed, specify them here.  If using Python 2.6 or less, then these
     # have to be included in MANIFEST.in as well.
     package_data={
-        'static': ['*'],
-        'templates': ['*'],
+        'larva': ["templates", "static"],
     },
 
     # Although 'package_data' is the preferred approach, in some case you may

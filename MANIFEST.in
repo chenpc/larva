@@ -1,2 +1,2 @@
-recursive-include static *
-recursive-include templates *
+recursive-include larva/static *
+recursive-include larva/templates *
