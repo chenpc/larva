@@ -383,7 +383,7 @@
                                                             formDataObj[thisInput.attr("name")] = parseInt(thisInput.val());
                                                         }
                                                         else if (thisInput.attr('type') == 'checkbox'){
-                                                            if (thisInput.val() == "True") {
+                                                            if (thisInput.is(":checked")) {
                                                                 formDataObj[thisInput.attr("name")] = true;
                                                             }
                                                             else{

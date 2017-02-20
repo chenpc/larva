@@ -29,6 +29,14 @@ class Object(object):
 function_inspect_table = OrderedDict()
 
 
+class ModuleNameError(NameError):
+    pass
+
+
+class FunctionNameError(NameError):
+    pass
+
+
 def parse_doc(function):
     htmltype = {"str": "text", "int": "number", "boolean": "checkbox", "datetime": "datetime-local",
                 "list": "text"}
@@ -77,13 +85,17 @@ def larva_format(json_token):
 def parse_request(func, req):
     doc = parse_doc(func)
     req_obj = req.json
-
-    if 'Args' in doc:
-        for p, v in doc['Args'].items():
-            if v['type'] == 'datetime':
-                datestring = req_obj[p]
-                req_obj[p] = dateutil.parser.parse(datestring)
-    return req_obj
+    if type(req_obj) == dict:
+        if 'Args' in doc:
+            for p, v in doc['Args'].items():
+                if v['type'] == 'datetime':
+                    datestring = req_obj[p]
+                    req_obj[p] = dateutil.parser.parse(datestring)
+        return None, req_obj
+    else:
+        args = req_obj[0]
+        kwargs = req_obj[1]
+        return args, kwargs
 
 
 class Larva:
@@ -121,12 +133,26 @@ class Larva:
         def api(module_name, func_name):
             t = timeit.Timer()
             result = OrderedDict()
+            args = []
+            kwargs = {}
 
             local.username = g.username
-            f = getattr(getattr(self.modules, module_name), func_name)
-            kwargs = parse_request(f, request)
+
             try:
-                ret = f(**kwargs)
+                if not hasattr(self.modules, module_name):
+                    raise ModuleNameError("No such module")
+
+                module = getattr(self.modules, module_name)
+                if not hasattr(module, func_name):
+                    raise FunctionNameError("No such function")
+
+                f = getattr(module, func_name)
+                args, kwargs = parse_request(f, request)
+
+                if args:
+                    ret = f(*args, **kwargs)
+                else:
+                    ret = f(**kwargs)
                 result['data'] = ret
                 result['status'] = True
 

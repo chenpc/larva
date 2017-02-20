@@ -4,6 +4,7 @@ from flask_httpauth import HTTPTokenAuth
 from flask_httpauth import HTTPBasicAuth
 from flask import g
 
+
 class Auth(object):
     def __init__(self, app_name="Larva"):
         self.users_db = Config("users_db")
