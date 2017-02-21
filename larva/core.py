@@ -39,7 +39,7 @@ class FunctionNameError(NameError):
 
 def parse_doc(function):
     htmltype = {"str": "text", "int": "number", "boolean": "checkbox", "datetime": "datetime-local",
-                "list": "text"}
+                "list": "text", "dict": "text"}
     result = OrderedDict()
     sep_data = function.__doc__.splitlines() # XXX expandtab??
     args, varg, karg, defaults = (inspect.getargspec(function))
@@ -58,8 +58,14 @@ def parse_doc(function):
             indent = len(line) - len(stripped)
             if indent == 8: # 2 tabs
                 field=  stripped.split(":")[0]
-                result[field] = OrderedDict()
+                if field == "Examples":
+                    result[field] = ""
+                else:
+                    result[field] = OrderedDict()
             elif indent == 12 and field != "": # 3 tabs
+                if field == "Examples":
+                    result[field] = result[field] + stripped + "\n"
+                    continue
                 value = OrderedDict()
                 value['description'] = stripped.split(":")[1]
                 name = stripped.split(":")[0].split("(")[0]
@@ -91,6 +97,9 @@ def parse_request(func, req):
                 if v['type'] == 'datetime':
                     datestring = req_obj[p]
                     req_obj[p] = dateutil.parser.parse(datestring)
+                elif v['type'] == 'list' or v['type'] == 'dict':
+                    json_string = req_obj[p]
+                    req_obj[p] = json.loads(json_string)
         return None, req_obj
     else:
         args = req_obj[0]
@@ -148,6 +157,7 @@ class Larva:
 
                 f = getattr(module, func_name)
                 args, kwargs = parse_request(f, request)
+
 
                 if args:
                     ret = f(*args, **kwargs)

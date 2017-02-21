@@ -57,7 +57,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="/">Promise Larva JSON-RPC</a>
+                <a class="navbar-brand" href="/">Larva JSON-RPC</a>
             </div>
         <!-- Top Menu Items -->
 
@@ -432,7 +432,7 @@
                                                 });
                                             </script>
                                         </form>
-
+                                        {% if doc[object][method].Returns %}
                                         <h4 class="sub-header">Return</h4>
                                         <table class="table table-striped table-hover">
                                             <thead>
@@ -444,9 +444,11 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {% for field in doc[object][method].Returns%}
+                                                {% for name in doc[object][method].Returns %}
+                                                    {% set field = doc[object][method].Returns[name] %}
+
                                                 <tr>
-                                                    <td class="warning">{{field.name}}</td>
+                                                    <td class="warning">{{name}}</td>
                                                     <td class="warning">{{field.type}}</td>
                                                     <td class="warning">{{field.default}}</td>
                                                     <td class="warning" style='white-space:pre'>{{field.description}}</td>
@@ -454,6 +456,14 @@
                                                 {%endfor%}
                                             </tbody>
                                         </table>
+                                        {% endif %}
+                                        {% if doc[object][method].Examples %}
+                                        <h4 class="sub-header">Examples</h4>
+                                        <span>
+                                            <pre>{{ doc[object][method].Examples }}</pre>
+                                        </span>
+                                        {% endif %}
+
                                     </div>
                                     <h4 class="sub-header result">JSON Input</h4>
                                     <pre class="result" id="input_{{object}}_{{method}}"></pre>
