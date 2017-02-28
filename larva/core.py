@@ -10,6 +10,10 @@ import timeit
 import uuid
 import datetime
 import dateutil.parser
+import pickle
+import base64
+import sys
+import traceback
 
 from collections import OrderedDict
 from larva.config import Config
@@ -144,6 +148,11 @@ class Larva:
             result = OrderedDict()
             args = []
             kwargs = {}
+            if "pickle" in request.headers:
+                if request.headers.get('pickle') == "yes":
+                    piclke_on = True
+                else:
+                    pickle_on = False
 
             local.username = g.username
 
@@ -172,6 +181,14 @@ class Larva:
                 result['error_type'] = e.__class__.__name__
                 result['error_args'] = e.args
                 result['status'] = False
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                tb = traceback.format_exception(exc_type, exc_value, exc_traceback)
+                result['error_tb'] = tb
+                if piclke_on:
+                    p = pickle.dumps(e)
+                    b64 = base64.b64encode(p)
+                    result['error_pickle'] = b64
+
 
             # Save Config
             m.config.save()

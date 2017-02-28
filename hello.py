@@ -12,6 +12,7 @@ class Hello(object):
         Returns:
             result(str): Return Test
         """
+        raise NameError("try it")
         return (msg, bool_msg, num)
 
 if __name__ == '__main__':
