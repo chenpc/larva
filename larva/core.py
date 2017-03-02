@@ -148,12 +148,6 @@ class Larva:
             result = OrderedDict()
             args = []
             kwargs = {}
-            if "pickle" in request.headers:
-                if request.headers.get('pickle') == "yes":
-                    piclke_on = True
-                else:
-                    pickle_on = False
-
             local.username = g.username
 
             try:
@@ -184,10 +178,6 @@ class Larva:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
                 tb = traceback.format_exception(exc_type, exc_value, exc_traceback)
                 result['error_tb'] = tb
-                if piclke_on:
-                    p = pickle.dumps(e)
-                    b64 = base64.b64encode(p)
-                    result['error_pickle'] = b64
 
 
             # Save Config

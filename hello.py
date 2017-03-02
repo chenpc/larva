@@ -2,6 +2,9 @@ import unittest
 from larva.core import Larva
 
 
+class MyError(Exception):
+    pass
+
 class Hello(object):
     def test_hello(self, msg, bool_msg, num):
         """ Test Hello msg

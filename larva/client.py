@@ -5,8 +5,15 @@ import json
 import base64
 import sys
 
+
+class LarvaError(Exception):
+    def __init__(self, name, args):
+        self.name = name
+        self.args = args
+
+
 def larva_call(host, port, token, module, func, *args, **kwargs):
-    headers = {'Authorization': 'Token %s' % token, "Content-Type": "application/json", "pickle": "yes"}
+    headers = {'Authorization': 'Token %s' % token, "Content-Type": "application/json"}
     params = [args, kwargs]
     result = requests.post('http://%s:%d/api/%s/%s' % (host, port, module, func), headers=headers, json=params)
     result = result.json()
@@ -14,15 +21,11 @@ def larva_call(host, port, token, module, func, *args, **kwargs):
     if result['status']:
         return result['data']
     else:
-        p = result['error_pickle'][1:]
-        b64= base64.b64decode(p)
-        e = pickle.loads(b64)
         tb = result['error_tb']
-
-        for t in tb:
-            print(t, end='', file=sys.stderr)
-        raise e
-
+        if hasattr(globals()['__builtins__'], result['error_type']):
+            e = getattr(globals()['__builtins__'], result['error_type'])
+            raise e(result['error_args'])
+        raise LarvaError(result['error_type'], result['error_args'])
 
 
 class LarvaProxy(object):
@@ -49,5 +52,5 @@ rpc = LarvaProxy("127.0.0.1", 8080)
 try:
     res = rpc.hello.test_hello("kk", True, 4)
     print(res)
-except Exception as e:
-    print("aError")
+except NameError as e:
+    print(e)
