@@ -42,7 +42,7 @@ class FunctionNameError(NameError):
 
 
 def parse_doc(function):
-    htmltype = {"str": "text", "int": "number", "boolean": "checkbox", "datetime": "datetime-local",
+    htmltype = {"str": "text", "int": "number", "boolean": "select", "datetime": "datetime-local",
                 "list": "text", "dict": "text"}
     result = OrderedDict()
     sep_data = function.__doc__.splitlines() # XXX expandtab??

@@ -342,17 +342,39 @@
                                                     <td class="info" style='white-space:pre'>{{field.description}}</td>
                                                     <td class="info">
                                                         <div class="col-md-3">
-                                                            <input type="{{ field.htmltype }}" class="form-control" name="{{name}}" value=
-                                                            {% if field.type == "datetime" and not field.default %}
-                                                                "{{ time }}"
+                                                            {% if field.type == "boolean" %}
+                                                                <select type="{{ field.htmltype }}" name="{{name}}">
+                                                                <option value=null></option>
+                                                                    {% if field.default is defined %}
+                                                                        {% if field.default %}
+                                                                            <option value=true selected>True</option>
+                                                                            <option value=false>False</option>
+                                                                        {% else %}
+                                                                            <option value=true>True</option>
+                                                                            <option value=false selected>False</option>
+                                                                        {% endif %}
+                                                                    {% else %}
+                                                                        <option value=true>True</option>
+                                                                        <option value=false>False</option>
+                                                                    {% endif %}
+                                                                </select>
                                                             {% else %}
-                                                                "{{field.default}}"
-                                                            {% endif %}
+                                                                <input type="{{ field.htmltype }}" class="form-control" name="{{name}}"
+                                                                {% if field.type == "datetime" %}
+                                                                    value="{{ time }}"
+                                                                {% else %}
+                                                                    {% if field.type == "str" and not field.default %}
+                                                                        value=""
+                                                                    {% else %}
+                                                                        value="{{field.default}}"
+                                                                    {% endif %}
+                                                                {% endif %}
 
-                                                            {% if field.type == "boolean" and field.default %}
-                                                                checked
-                                                            {%endif%}
-                                                            >
+                                                                {% if field.type == "boolean" and field.default %}
+                                                                    checked
+                                                                {%endif%}
+                                                                >
+                                                            {% endif %}
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -380,17 +402,24 @@
                                                         formJqObj.find(":input").not("[type='submit']").not("[type='reset']").each(function(){
                                                         var thisInput = $(this);
                                                         if (thisInput.attr('type') == "number") {
-                                                            formDataObj[thisInput.attr("name")] = parseInt(thisInput.val());
+                                                            if (thisInput.val()) {
+                                                                formDataObj[thisInput.attr("name")] = parseInt(thisInput.val());
+                                                            }
                                                         }
-                                                        else if (thisInput.attr('type') == 'checkbox'){
-                                                            if (thisInput.is(":checked")) {
+                                                        else if (thisInput.attr('type') == 'text') {
+                                                            if (thisInput.val().length != 0) {
+                                                                formDataObj[thisInput.attr("name")] = thisInput.val();
+                                                            }
+                                                        }
+                                                        else if (thisInput.attr('type') == 'select') {
+                                                            if (thisInput.val() == "true") {
                                                                 formDataObj[thisInput.attr("name")] = true;
                                                             }
-                                                            else{
+                                                            else if(thisInput.val() == "false") {
                                                                 formDataObj[thisInput.attr("name")] = false;
                                                             }
                                                         }
-                                                        else{
+                                                        else {
                                                             formDataObj[thisInput.attr("name")] = thisInput.val();
                                                         }
                                                         });
