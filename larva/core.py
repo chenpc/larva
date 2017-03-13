@@ -102,8 +102,9 @@ def parse_request(func, req):
                     datestring = req_obj[p]
                     req_obj[p] = dateutil.parser.parse(datestring)
                 elif v['type'] == 'list' or v['type'] == 'dict':
-                    json_string = req_obj[p]
-                    req_obj[p] = json.loads(json_string)
+                    if p in req_obj:
+                        json_string = req_obj[p]
+                        req_obj[p] = json.loads(json_string)
         return None, req_obj
     else:
         args = req_obj[0]
