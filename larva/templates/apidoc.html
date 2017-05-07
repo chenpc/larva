@@ -501,9 +501,9 @@
                                                     {% set field = doc[object][method].Raises[name] %}
 
                                                 <tr>
-                                                    <td class="warning">{{name}}</td>
-                                                    <td class="warning">{{field.type}}</td>
-                                                    <td class="warning" style='white-space:pre'>{{field.description}}</td>
+                                                    <td class="danger">{{name}}</td>
+                                                    <td class="danger">{{field.type}}</td>
+                                                    <td class="danger" style='white-space:pre'>{{field.description}}</td>
                                                 </tr>
                                                 {%endfor%}
                                             </tbody>

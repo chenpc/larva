@@ -73,10 +73,13 @@ def parse_doc(function):
                 value = OrderedDict()
                 value['description'] = stripped.split(":")[1]
                 name = stripped.split(":")[0].split("(")[0]
+
                 value['type'] = stripped.split(":")[0].split("(")[1][:-1]
-                value['htmltype'] = htmltype[value['type']]
-                if name in default_table:
-                    value['default'] = default_table[name]
+
+                if field == "Args":
+                    value['htmltype'] = htmltype[value['type']]
+                    if name in default_table:
+                        value['default'] = default_table[name]
                 result[field][name]=value
 
     function_inspect_table[function] = result
