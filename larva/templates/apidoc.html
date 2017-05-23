@@ -299,7 +299,7 @@
                                         {{method}}(
                                         {% for name in doc[object][method].Args %}
                                             {% set field = doc[object][method].Args[name] %}
-                                        {% if field.default %}
+                                        {% if 'default' in field %}
                                             {{name}}={{field.default}}
                                         {%else%}
                                             {{name}}
