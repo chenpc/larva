@@ -72,7 +72,13 @@ def parse_doc(function_desc):
                     result[field] = result[field] + stripped + "\n"
                     continue
                 value = OrderedDict()
-                value['description'] = stripped.split(":")[1]
+                token_list = stripped.split(":")
+                value['description'] = token_list[1]
+
+                # enum, range
+                if len(token_list) == 3:
+                    value[token_list[2].split('=')[0]] = json.loads(token_list[2].split('=')[1])
+
                 name = stripped.split(":")[0].split("(")[0]
 
                 value['type'] = stripped.split(":")[0].split("(")[1][:-1]
