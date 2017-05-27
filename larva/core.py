@@ -41,33 +41,34 @@ class FunctionNameError(NameError):
     pass
 
 
-def parse_doc(function):
+def parse_doc(function_desc):
     htmltype = {"str": "text", "int": "number", "boolean": "select", "datetime": "datetime-local",
                 "list": "text", "dict": "text"}
+    section_keyword = {"Args", "Returns", "Raises"}
     result = OrderedDict()
-    sep_data = function.__doc__.splitlines() # XXX expandtab??
-    args, varg, karg, defaults = (inspect.getargspec(function))
+    sep_data = function_desc.__doc__.splitlines() # XXX expandtab??
+    args, varg, karg, defaults = (inspect.getargspec(function_desc))
     if defaults is None:
         defaults = []
     default_table = OrderedDict(zip(args[-len(defaults):], defaults))
 
     result['description'] = sep_data[0]
     field = ""
-    if function in function_inspect_table:
-        return function_inspect_table[function]
+    if function_desc in function_inspect_table:
+        return function_inspect_table[function_desc]
 
     for line in sep_data[1:]:
         stripped = line.lstrip()
         if stripped:
             indent = len(line) - len(stripped)
             if indent == 8: # 2 tabs
-                field=  stripped.split(":")[0]
-                if field == "Examples":
+                field = stripped.split(":")[0]
+                if field not in section_keyword:
                     result[field] = ""
                 else:
                     result[field] = OrderedDict()
             elif indent == 12 and field != "": # 3 tabs
-                if field == "Examples":
+                if field not in section_keyword:
                     result[field] = result[field] + stripped + "\n"
                     continue
                 value = OrderedDict()
@@ -82,7 +83,7 @@ def parse_doc(function):
                         value['default'] = default_table[name]
                 result[field][name]=value
 
-    function_inspect_table[function] = result
+    function_inspect_table[function_desc] = result
     return result
 
 
