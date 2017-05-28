@@ -61,7 +61,7 @@ def parse_doc(function_desc):
         stripped = line.lstrip()
         if stripped:
             indent = len(line) - len(stripped)
-            if indent == 8: # 2 tabs
+            if indent == 8:  # 2 tabs
                 field = stripped.split(":")[0]
                 if field not in section_keyword:
                     result[field] = ""
@@ -75,9 +75,11 @@ def parse_doc(function_desc):
                 token_list = stripped.split(":")
                 value['description'] = token_list[1]
 
-                # enum, range
-                if len(token_list) == 3:
-                    value[token_list[2].split('=')[0]] = json.loads(token_list[2].split('=')[1])
+                # enum, func
+                if len(token_list) > 2:
+                    query_type, query_args = stripped[len(token_list[0]) + len(token_list[1])+2:].split('=')
+
+                    value[query_type] = json.loads(query_args)
 
                 name = stripped.split(":")[0].split("(")[0]
 
