@@ -79,7 +79,7 @@ def parse_doc(function_desc):
                 if len(token_list) > 2:
                     query_type, query_args = stripped[len(token_list[0]) + len(token_list[1])+2:].split('=')
 
-                    value[query_type] = json.loads(query_args)
+                    value[query_type] = json.loads(query_args, object_pairs_hook=OrderedDict)
 
                 name = stripped.split(":")[0].split("(")[0]
 
@@ -116,7 +116,7 @@ def parse_request(func, req):
                 elif v['type'] == 'list' or v['type'] == 'dict':
                     if p in req_obj:
                         json_string = req_obj[p]
-                        req_obj[p] = json.loads(json_string)
+                        req_obj[p] = json.loads(json_string, object_pairs_hook=OrderedDict)
         return None, req_obj
     else:
         args = req_obj[0]

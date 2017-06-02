@@ -4,6 +4,7 @@ import pickle
 import json
 import base64
 import sys
+from collections import OrderedDict
 
 
 class LarvaError(Exception):
@@ -16,7 +17,7 @@ def larva_call(host, port, token, module, func, *args, **kwargs):
     headers = {'Authorization': 'Token %s' % token, "Content-Type": "application/json"}
     params = [args, kwargs]
     result = requests.post('http://%s:%d/api/%s/%s' % (host, port, module, func), headers=headers, json=params)
-    result = result.json()
+    result = json.loads(result.text, object_pairs_hook=OrderedDict)
 
     if result['status']:
         return result['data']
@@ -44,13 +45,3 @@ class LarvaProxy(object):
             return partial(larva_call, self.host, self.port, self.token, self.method, item)
         else:
             return LarvaProxy(self.host, self.port, self.token, method=item)
-
-class TestException(Exception):
-    pass
-
-rpc = LarvaProxy("127.0.0.1", 8080)
-try:
-    res = rpc.hello.test_hello("kk", True, 4)
-    print(res)
-except NameError as e:
-    print(e)
