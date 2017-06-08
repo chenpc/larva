@@ -33,6 +33,8 @@ class Config(object):
 
     def __delitem__(self, key):
         del self.db[key]
+    def __str__(self):
+        return json.dumps(self.db, indent=1)
 
     def save(self):
         config = db_session.query(ConfigDB).filter_by(name=self.name).one()

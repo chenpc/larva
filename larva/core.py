@@ -67,9 +67,9 @@ def parse_doc(function_desc):
                     result[field] = ""
                 else:
                     result[field] = OrderedDict()
-            elif indent == 12 and field != "": # 3 tabs
+            elif indent >= 12 and field != "": # 3 tabs
                 if field not in section_keyword:
-                    result[field] = result[field] + stripped + "\n"
+                    result[field] = result[field] + line[12:] + "\n"
                     continue
                 value = OrderedDict()
                 token_list = stripped.split(":")
