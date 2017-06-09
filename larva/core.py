@@ -26,6 +26,9 @@ from larva.database import db_session, init_db
 
 root_path = os.path.dirname(os.path.abspath(__file__))
 
+class LarvaObject(object):
+    def __init__(self):
+        self.config = Config(self.__class__.__name__)
 
 class Object(object):
     pass
@@ -125,7 +128,7 @@ def parse_request(func, req):
 
 
 class Larva:
-    def __init__(self, modules_list, host=None, port=None, app_name="Larva", auth=None, config=None):
+    def __init__(self, modules_list, host=None, port=None, app_name="Larva", auth=None):
         print("Init Larva")
         self.host = host
         self.port = port
@@ -140,11 +143,6 @@ class Larva:
 
         modules_list.append(Event())
         for m in sorted(modules_list, key= lambda m:m.__class__.__name__):
-            if config:
-                m.config = config(m.__class__.__name__)
-            else:
-                m.config = Config(m.__class__.__name__)
-
             m.modules = self.modules
             setattr(self.modules, m.__class__.__name__.lower(), m)
 
