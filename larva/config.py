@@ -1,6 +1,7 @@
-from larva.database import BaseDB, db_session
+from larva.database import BaseDB, db_session, init_db
 from sqlalchemy import Column, String
 from sqlalchemy.orm.exc import NoResultFound
+
 import json
 
 class ConfigDB(BaseDB):
@@ -15,7 +16,8 @@ class Config(object):
 
         try:
             config = db_session.query(ConfigDB).filter_by(name=module_name).one()
-        except NoResultFound:
+        except:
+            init_db()
             config = ConfigDB(name=module_name, data=json.dumps(self.db))
             db_session.add(config)
             db_session.commit()
