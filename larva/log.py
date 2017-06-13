@@ -3,6 +3,7 @@ from sqlalchemy import Column, Integer, String, Boolean, DateTime, desc
 import datetime
 from larva.task import get_session
 import json
+from larva.config import Config
 
 log_level = ['critical', 'error', 'warning', 'info', 'debug']
 class LogModel(BaseDB):
@@ -63,6 +64,9 @@ log = Log()
 
 
 class Event(object):
+    def __init__(self):
+        self.config = Config(self.__class__.__name__)
+
     def get_event(self, date=None, limit=None):
         """ Get all events
         Args:

@@ -190,9 +190,11 @@ class Larva:
                 tb = traceback.format_exception(exc_type, exc_value, exc_traceback)
                 result['error_tb'] = tb
 
+                # XXX log this
+                traceback.print_tb(exc_traceback)
 
             # Save Config
-            m.config.save()
+            module.config.save()
 
             result['duration'] = round(t.timeit(), 6)
 

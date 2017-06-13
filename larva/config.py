@@ -9,12 +9,14 @@ class ConfigDB(BaseDB):
     name = Column(String, primary_key=True)
     data = Column(String)
 
+
 class Config(object):
     def __init__(self, module_name):
         self.db = dict()
         self.name = module_name
 
         try:
+
             config = db_session.query(ConfigDB).filter_by(name=module_name).one()
         except:
             init_db()
@@ -35,6 +37,7 @@ class Config(object):
 
     def __delitem__(self, key):
         del self.db[key]
+
     def __str__(self):
         return json.dumps(self.db, indent=1)
 
