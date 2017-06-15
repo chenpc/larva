@@ -7,6 +7,7 @@ class Atomic(object):
         self.local_lock = Lock()
         self.g_lock = Lock()
         self.m_lock = dict()
+        self.f_lock = dict()
         self.n_lock = dict()
 
     def giant_lock(self, f):
@@ -36,6 +37,26 @@ class Atomic(object):
                 result = func(module, *args, **kwargs)
             finally:
                 m_lock.release()
+
+            return result
+        return decorate(f, do_function)
+
+    def function_lock(self, f):
+        def do_function(func, module, *args, **kwargs):
+            self.local_lock.acquire()
+            lock_name = module.__class__.__name__ + "-" + func.__name__
+            print(lock_name)
+            if lock_name not in self.f_lock:
+                f_lock = self.f_lock[lock_name] = Lock()
+            else:
+                f_lock = self.f_lock[lock_name]
+            self.local_lock.release()
+
+            try:
+                f_lock.acquire()
+                result = func(module, *args, **kwargs)
+            finally:
+                f_lock.release()
 
             return result
         return decorate(f, do_function)
