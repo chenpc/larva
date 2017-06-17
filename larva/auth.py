@@ -3,6 +3,7 @@ from flask_httpauth import HTTPTokenAuth
 # from flask_httpauth import MultiAuth
 from flask_httpauth import HTTPBasicAuth
 from flask import g
+import pam
 
 
 class Auth(object):
@@ -14,9 +15,18 @@ class Auth(object):
 
         @self.basic_auth.verify_password
         def verify_password(username, password):
-            return username
+            p = pam.pam()
+            if p.authenticate(username, password, service="login"):
+                return username
+            else:
+                return None
 
         @self.token_auth.verify_token
         def verify_token(token):
-            g.username = "root"
-            return True
+            if token in self.token_db:
+                g.username = self.token_db[token]
+                print(token, g.username)
+                return True
+            return False
+
+
