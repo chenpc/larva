@@ -38,6 +38,9 @@ class Config(object):
     def __delitem__(self, key):
         del self.db[key]
 
+    def __iter__(self):
+        return self.db.__iter__()
+
     def __str__(self):
         return json.dumps(self.db, indent=1)
 
