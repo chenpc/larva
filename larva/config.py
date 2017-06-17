@@ -16,7 +16,6 @@ class Config(object):
         self.name = module_name
 
         try:
-
             config = db_session.query(ConfigDB).filter_by(name=module_name).one()
         except:
             init_db()

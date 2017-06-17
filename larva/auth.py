@@ -25,7 +25,6 @@ class Auth(object):
         def verify_token(token):
             if token in self.token_db:
                 g.username = self.token_db[token]
-                print(token, g.username)
                 return True
             return False
 

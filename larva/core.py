@@ -134,8 +134,6 @@ class Larva:
         self.port = port
         self.modules = Object()
 
-        init_db()
-
         if auth:
             self.auth = auth
         else:
@@ -192,9 +190,6 @@ class Larva:
 
                 # XXX log this
                 traceback.print_tb(exc_traceback)
-
-            # Save Config
-            module.config.save()
 
             result['duration'] = round(t.timeit(), 6)
 
