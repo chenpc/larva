@@ -118,8 +118,11 @@ def parse_request(func, req):
                     req_obj[p] = dateutil.parser.parse(datestring)
                 elif v['type'] == 'list' or v['type'] == 'dict':
                     if p in req_obj:
-                        json_string = req_obj[p]
-                        req_obj[p] = json.loads(json_string, object_pairs_hook=OrderedDict)
+                        if isinstance(req_obj[p], list) or isinstance(req_obj[p], dict):
+                            req_obj[p] = req_obj[p]
+                        else:
+                            json_string = req_obj[p]
+                            req_obj[p] = json.loads(json_string, object_pairs_hook=OrderedDict)
         return None, req_obj
     else:
         args = req_obj[0]
@@ -140,9 +143,14 @@ class Larva:
             self.auth = Auth(app_name)
 
         modules_list.append(Event())
-        for m in sorted(modules_list, key= lambda m:m.__class__.__name__):
+        for m in modules_list:
             m.modules = self.modules
             setattr(self.modules, m.__class__.__name__.lower(), m)
+
+        for m in modules_list:
+            print(m)
+            if hasattr(m, '_start'):
+                m._start()
 
         self.app = Flask(app_name, root_path=root_path)
 
@@ -190,6 +198,7 @@ class Larva:
 
                 # XXX log this
                 traceback.print_tb(exc_traceback)
+                print(e)
 
             result['duration'] = round(t.timeit(), 6)
 
