@@ -67,8 +67,8 @@ PAM_ERROR_MSG             = 3
 PAM_TEXT_INFO             = 4
 PAM_REINITIALIZE_CRED     = 8
 
-libc                      = CDLL(find_library("/lib/libc.so.6"))
-libpam                    = CDLL(find_library("/lib/libpam.so"))
+libc                      = CDLL("/lib/libc.so.6")
+libpam                    = CDLL("/lib/libpam.so")
 
 calloc                    = libc.calloc
 calloc.restype            = c_void_p
