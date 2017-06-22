@@ -3,7 +3,7 @@ from flask_httpauth import HTTPTokenAuth
 # from flask_httpauth import MultiAuth
 from flask_httpauth import HTTPBasicAuth
 from flask import g
-import pam
+from . import pam
 
 
 class Auth(object):
