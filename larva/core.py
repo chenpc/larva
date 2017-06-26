@@ -222,7 +222,11 @@ class Larva:
             self.auth.token_db.save()
             return uid
 
-        @self.app.route('/', methods=['GET'])
+        @self.app.route('/')
+        def root():
+            return self.app.send_static_file('index.html')
+
+        @self.app.route('/doc', methods=['GET'])
         def doc(module_name=None, func_name=None):
             result = OrderedDict()
             for k in self.modules.__dict__:
