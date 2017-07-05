@@ -1,10 +1,9 @@
 import requests
 from functools import partial
-import pickle
 import json
-import base64
-import sys
 from collections import OrderedDict
+import builtins
+
 
 
 class LarvaError(Exception):
@@ -23,8 +22,8 @@ def larva_call(host, port, token, module, func, *args, **kwargs):
         return result['data']
     else:
         tb = result['error_tb']
-        if hasattr(globals()['__builtins__'], result['error_type']):
-            e = getattr(globals()['__builtins__'], result['error_type'])
+        if hasattr(builtins, result['error_type']):
+            e = getattr(builtins, result['error_type'])
             raise e(result['error_args'])
         raise LarvaError(result['error_type'], result['error_args'])
 
