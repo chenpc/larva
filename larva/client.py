@@ -3,6 +3,7 @@ from functools import partial
 import json
 from collections import OrderedDict
 import builtins
+requests.packages.urllib3.disable_warnings()
 
 
 
