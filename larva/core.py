@@ -136,18 +136,22 @@ class Larva:
         self.host = host
         self.port = port
         self.modules = Object()
+        object_list = list()
 
         if auth:
             self.auth = auth
         else:
             self.auth = Auth(app_name)
 
-        modules_list.append(Event())
+        modules_list.append(Event)
         for m in modules_list:
+            object_list.append(m())
+
+        for m in object_list:
             m.modules = self.modules
             setattr(self.modules, m.__class__.__name__.lower(), m)
 
-        for m in modules_list:
+        for m in object_list:
             print(m)
             if hasattr(m, '_start'):
                 m._start()
