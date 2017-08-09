@@ -23,7 +23,6 @@ from larva.log import Event, log
 
 # For Database
 from larva.database import db_session, init_db
-
 root_path = os.path.dirname(os.path.abspath(__file__))
 
 class LarvaObject(object):
@@ -201,8 +200,8 @@ class Larva:
                 result['error_tb'] = tb
 
                 # XXX log this
-                traceback.print_tb(exc_traceback)
-                print(e)
+                for line in tb:
+                    print(line, end='')
 
             result['duration'] = round(t.timeit(), 6)
 
