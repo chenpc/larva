@@ -19,7 +19,6 @@ from collections import OrderedDict
 from larva.config import Config
 from larva.auth import Auth
 from larva.task import local
-from larva.log import Event, log
 
 # For Database
 from larva.database import db_session, init_db
@@ -130,19 +129,22 @@ def parse_request(func, req):
 
 
 class Larva:
-    def __init__(self, modules_list, host=None, port=None, app_name="Larva", auth=None):
+    def __init__(self, modules_list, host=None, port=None, app_name="Larva", auth=None, logger=None):
         print("Init Larva")
         self.host = host
         self.port = port
         self.modules = Object()
         object_list = list()
 
+        if logger is None:
+            import logging
+            logger = logging.getLogger("larva")
+
         if auth:
             self.auth = auth
         else:
             self.auth = Auth(app_name)
 
-        modules_list.append(Event)
         for m in modules_list:
             object_list.append(m())
 
@@ -151,7 +153,6 @@ class Larva:
             setattr(self.modules, m.__class__.__name__.lower(), m)
 
         for m in object_list:
-            print(m)
             if hasattr(m, '_start'):
                 m._start()
 
@@ -206,7 +207,8 @@ class Larva:
             result['duration'] = round(t.timeit(), 6)
 
             if module_name != "event":
-                log.log_info("larva-core", json.dumps((module_name, func_name, kwargs, result), default=larva_format))
+                log_msg = json.dumps((module_name, func_name, kwargs, result), default=larva_format)
+                logger.debug("larve-core: "+ log_msg)
 
             # Handle all non serializable token as string
             return json.dumps(result, default=larva_format)
