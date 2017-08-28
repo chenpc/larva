@@ -1,6 +1,6 @@
 from functools import wraps
 from decorator import decorate
-from gevent.lock import BoundedSemaphore as Lock
+from threading import Lock
 
 class Atomic(object):
     def __init__(self):

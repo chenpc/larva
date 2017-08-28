@@ -19,7 +19,7 @@ from collections import OrderedDict
 from larva.config import Config
 from larva.auth import Auth
 from larva.task import local
-
+from sqlalchemy.orm.query import Query
 # For Database
 from larva.database import db_session, init_db
 root_path = os.path.dirname(os.path.abspath(__file__))
@@ -128,6 +128,18 @@ def parse_request(func, req):
         return args, kwargs
 
 
+def parse_orm(query):
+    res = dict()
+    q = query.limit(25)
+    db_list = db_session.execute(q).fetchall()
+    keys = db_session.execute(q).keys()
+    res = list()
+    for db in db_list:
+        data = OrderedDict(zip(keys, db))
+        res.append(data)
+    return res
+
+
 class Larva:
     def __init__(self, modules_list, host=None, port=None, app_name="Larva", auth=None, logger=None):
         print("Init Larva")
@@ -187,7 +199,10 @@ class Larva:
                     ret = f(*args, **kwargs)
                 else:
                     ret = f(**kwargs)
-                result['data'] = ret
+                if isinstance(ret, Query):
+                    result['data'] = parse_orm(ret)
+                else:
+                    result['data'] = ret
                 result['status'] = True
 
             except Exception as e:
