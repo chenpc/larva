@@ -140,12 +140,35 @@ def parse_orm(query):
     return res
 
 
+class ModuleAutoStarter():
+    real_modules = dict()
+    started_modules = dict()
+
+    def __getattr__(self, item):
+        if item not in self.started_modules:
+            self.started_modules[item] = False
+            if hasattr(self.real_modules[item], '_start'):
+                self.real_modules[item]._start()
+            self.started_modules[item] = True
+        elif self.started_modules[item] is False:
+            raise RecursionError('%s can not be _start twice' % item)
+        return self.real_modules[item]
+
+    def __setattr__(self, key, value):
+        self.real_modules[key] = value
+
+    def start(self, item):
+        if item not in self.started_modules:
+            self.started_modules[item] = False
+            self.real_modules[item]._start()
+            self.started_modules[item] = True
+
 class Larva:
     def __init__(self, modules_list, host=None, port=None, app_name="Larva", auth=None, logger=None):
         print("Init Larva")
         self.host = host
         self.port = port
-        self.modules = Object()
+        self.modules = ModuleAutoStarter()
         object_list = list()
 
         if logger is None:
@@ -166,7 +189,7 @@ class Larva:
 
         for m in object_list:
             if hasattr(m, '_start'):
-                m._start()
+                self.modules.start(m.__class__.__name__.lower())
 
         self.app = Flask(app_name, root_path=root_path)
 
