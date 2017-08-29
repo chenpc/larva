@@ -268,7 +268,7 @@ class Larva:
         @self.app.route('/doc', methods=['GET'])
         def doc(module_name=None, func_name=None):
             result = OrderedDict()
-            for k in self.modules.__dict__:
+            for k in self.modules.real_modules:
                 if k not in result:
                     result[k] = OrderedDict()
                 m = getattr(self.modules, k)
@@ -281,7 +281,7 @@ class Larva:
         @self.app.route('/', methods=['POST'])
         def post_doc():
             result = OrderedDict()
-            for k in self.modules.__dict__:
+            for k in self.modules.real_modules:
                 if k not in result:
                     result[k] = OrderedDict()
                 m = getattr(self.modules, k)
@@ -293,7 +293,7 @@ class Larva:
         @self.app.route('/doc', methods=['POST'])
         def module_list():
             result = OrderedDict()
-            for k in self.modules.__dict__:
+            for k in self.modules.real_modules:
                 result.append(k)
             return json.dumps(result, default=larva_format)
 
