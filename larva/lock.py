@@ -45,7 +45,6 @@ class Atomic(object):
         def do_function(func, module, *args, **kwargs):
             self.local_lock.acquire()
             lock_name = module.__class__.__name__ + "-" + func.__name__
-            print(lock_name)
             if lock_name not in self.f_lock:
                 f_lock = self.f_lock[lock_name] = Lock()
             else:
