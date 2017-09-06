@@ -24,9 +24,14 @@ from sqlalchemy.orm.query import Query
 from larva.database import db_session, init_db
 root_path = os.path.dirname(os.path.abspath(__file__))
 
-class LarvaObject(object):
-    def __init__(self):
-        self.config = Config(self.__class__.__name__)
+
+class InitMeta(type):
+    def __init__(self, name, bases, attrs, **kwargs):
+        self.config = Config(name)
+        return super().__init__(name, bases, attrs)
+
+class LarvaObject(object, metaclass=InitMeta):
+    pass
 
 class Object(object):
     pass
@@ -130,7 +135,14 @@ def parse_request(func, req):
 
 def parse_orm(query):
     res = dict()
-    q = query.limit(25)
+    q = query
+    if 'limit' in request.headers:
+        limit  = int(request.headers['limit'])
+        q = q.limit(limit)
+        if 'page' in request.headers:
+            page = int(request.headers.get('page'))
+            q = q.offset(page * limit)
+
     db_list = db_session.execute(q).fetchall()
     keys = db_session.execute(q).keys()
     res = list()
@@ -138,6 +150,26 @@ def parse_orm(query):
         data = OrderedDict(zip(keys, db))
         res.append(data)
     return res
+
+
+def parse_page(res):
+    output = OrderedDict()
+
+    if 'limit' in request.headers:
+        limit  = int(request.headers['limit'])
+        page = int(request.headers.get('page'))
+
+        if isinstance(res, OrderedDict):
+            tmp = list(res)
+            tmp = tmp[page*limit: (page+1)*limit]
+
+            # Create new Ordereddict
+            for t in tmp:
+                output[t] = res[t]
+        return output
+    else:
+        return res
+
 
 
 class ModuleAutoStarter():
@@ -222,10 +254,20 @@ class Larva:
                     ret = f(*args, **kwargs)
                 else:
                     ret = f(**kwargs)
+
+                # Answer from DB
                 if isinstance(ret, Query):
                     result['data'] = parse_orm(ret)
+                    if 'limit' in request.headers:
+                        result['count'] = str(ret.count())
+                        result['page'] = request.headers['page']
+                        result['limit'] = request.headers['limit']
+
+                # Answer from normal function return
                 else:
-                    result['data'] = ret
+                    # XXX add paging here
+                    result['data'] = parse_page(ret)
+
                 result['status'] = True
 
             except Exception as e:
