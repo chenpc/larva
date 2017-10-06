@@ -201,7 +201,7 @@ class Larva:
         self.host = host
         self.port = port
         self.modules = ModuleAutoStarter()
-        object_list = list()
+        self.object_list = list()
 
         if logger is None:
             import logging
@@ -213,13 +213,13 @@ class Larva:
             self.auth = Auth(app_name)
 
         for m in modules_list:
-            object_list.append(m())
+            self.object_list.append(m())
 
-        for m in object_list:
+        for m in self.object_list:
             m.modules = self.modules
             setattr(self.modules, m.__class__.__name__.lower(), m)
 
-        for m in object_list:
+        for m in self.object_list:
             if hasattr(m, '_start'):
                 self.modules.start(m.__class__.__name__.lower())
 
@@ -237,6 +237,7 @@ class Larva:
             args = []
             kwargs = {}
             local.username = g.username
+            local.token = g.token
 
             try:
                 if not hasattr(self.modules, module_name):
@@ -350,4 +351,10 @@ class Larva:
 
     def run(self):
         self.app.run(host=self.host, port=self.port)
+
+    def __del__(self):
+        for m in self.object_list:
+            if hasattr(m, '__del__'):
+                m.__del__()
+
 
