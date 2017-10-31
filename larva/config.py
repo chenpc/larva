@@ -1,7 +1,7 @@
 from larva.database import BaseDB, db_session, init_db
 from sqlalchemy import Column, String
 from sqlalchemy.orm.exc import NoResultFound
-
+from collections import OrderedDict
 import json
 
 class ConfigDB(BaseDB):
@@ -23,7 +23,7 @@ class Config(object):
             db_session.add(config)
             db_session.commit()
 
-        self.db = json.loads(config.data)
+        self.db = json.loads(config.data, object_pairs_hook=OrderedDict)
 
     def __setitem__(self, key, item):
         self.db[key] = item
