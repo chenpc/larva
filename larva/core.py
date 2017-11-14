@@ -270,14 +270,17 @@ class Larva:
                 if isinstance(ret, Query):
                     result['data'] = parse_orm(ret)
                     if 'limit' in request.headers:
-                        result['count'] = str(ret.count())
+                        result['total_count'] = str(ret.count())
                         result['page'] = request.headers['page']
                         result['limit'] = request.headers['limit']
 
                 # Answer from normal function return
                 else:
-                    # XXX add paging here
                     result['data'] = parse_page(ret)
+                    if ret:
+                        result['total_count'] = len(ret)
+                    else:
+                        result['total_count'] = 0
 
                 result['status'] = True
 
