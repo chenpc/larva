@@ -229,6 +229,16 @@ class Larva:
         def shutdown_session(exception=None):
             db_session.remove()
 
+        @self.app.route('/api/system/info', methods=['GET'])
+        def system_info():
+            module = getattr(self.modules, "system")
+            func = getattr(module, "info")
+            result = OrderedDict()
+            result['data'] = parse_page(func())
+            result['status'] = True
+            return json.dumps(result, default=larva_format)
+
+
         @self.app.route('/api/<module_name>/<func_name>', methods=['POST'])
         @self.auth.token_auth.login_required
         def api(module_name, func_name):
