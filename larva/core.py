@@ -223,7 +223,7 @@ class Larva:
             if hasattr(m, '_start'):
                 self.modules.start(m.__class__.__name__.lower())
 
-        self.app = Flask(app_name, root_path=root_path)
+        self.app = Flask(app_name, root_path=root_path, static_folder="files")
 
         @self.app.teardown_appcontext
         def shutdown_session(exception=None):
