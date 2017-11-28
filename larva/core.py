@@ -277,7 +277,7 @@ class Larva:
                 # Answer from normal function return
                 else:
                     result['data'] = parse_page(ret)
-                    if ret:
+                    if isinstance(ret, dict) or isinstance(ret, list):
                         result['total_count'] = len(ret)
                     else:
                         result['total_count'] = 0
