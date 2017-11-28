@@ -1115,7 +1115,7 @@ if (typeof jQuery === 'undefined') {
           return
         }
         if (e.target !== e.currentTarget) return
-        this.options.backdrop == 'static'
+        this.options.backdrop == 'files'
           ? this.$element[0].focus()
           : this.hide()
       }, this))

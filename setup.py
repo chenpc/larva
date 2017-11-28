@@ -52,14 +52,14 @@ setup(
     # installed, specify them here.  If using Python 2.6 or less, then these
     # have to be included in MANIFEST.in as well.
     package_data={
-	'larva': ["templates/*.*", "static/*/*.*", "static/css/plugins/*.*", "static/font-awesome/*/*.*"],
+	'larva': ["templates/*.*", "files/*/*.*", "files/css/plugins/*.*", "files/font-awesome/*/*.*"],
     },
 
     # Although 'package_data' is the preferred approach, in some case you may
     # need to place data files outside of your packages. See:
     # http://docs.python.org/3.4/distutils/setupscript.html#installing-additional-files # noqa
     # In this case, 'data_file' will be installed into '<sys.prefix>/my_data'
-    #data_files=[('larva', ['static'])],
+    #data_files=[('larva', ['files'])],
 
     # To provide executable scripts, use entry points in preference to the
     # "scripts" keyword. Entry points provide cross-platform support and allow

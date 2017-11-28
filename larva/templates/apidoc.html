@@ -112,49 +112,6 @@
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bell"></i> <b class="caret"></b></a>
                     <ul class="dropdown-menu alert-dropdown event-notify">
-                        <script type="text/javascript">
-                            $(function() {
-                                $("ul.event-notify").empty();
-                                var actionurl = "/api/event/get_event";
-                                var DataObj = {"date": "{{ time }}", "limit": 5};
-                                token = localStorage.getItem('access_token');
-                                var poll_log = function () {
-                                    $.ajax({
-                                        url: actionurl,
-                                        type: 'post',
-                                        dataType: 'json',
-                                        contentType: "application/json",
-                                        data: JSON.stringify(DataObj),
-                                        headers: {
-                                            'Authorization': "Token " + token,
-                                        },
-                                        success: function (data, status) {
-                                            var $ul = $("ul.event-notify");
-                                            $ul.empty();
-                                            var log_list = data.data;
-                                            var log_level = ["label-danger", "label-danger", "label-warning", "label-info", "label-default"]
-
-                                            for (var m in log_list) {
-                                                log = log_list[m];
-                                                var $li = document.createElement( "li" );
-                                                var $a = document.createElement( "a" );
-                                                var $span = document.createElement( "span" );
-                                                $a.innerHTML = log.message;
-                                                $span.className = "label "+log_level[log.level];
-                                                $span.innerHTML = log.title;
-                                                $a.prepend($span);
-                                                $li.append($a);
-                                                $ul.append($li);
-                                            }
-                                        },
-                                        error: function (XMLHttpRequest, textStatus, errorThrown) {
-
-                                        }
-                                    });
-                                }
-                                setInterval(poll_log, 50000);
-                            });
-                        </script>
                     </ul>
                 </li>
                 <li class="dropdown">

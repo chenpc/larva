@@ -84,7 +84,7 @@ Licensed under the BSD-2-Clause License.
       if ((this.el == null) || this.el.length === 0) {
         throw new Error("Graph container element not found");
       }
-      if (this.el.css('position') === 'static') {
+      if (this.el.css('position') === 'files') {
         this.el.css('position', 'relative');
       }
       this.options = $.extend({}, this.gridDefaults, this.defaults || {}, options);
