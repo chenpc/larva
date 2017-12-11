@@ -17,7 +17,6 @@ import traceback
 
 from collections import OrderedDict
 from larva.config import Config
-from larva.auth import Auth
 from larva.task import local
 from sqlalchemy.orm.query import Query
 # For Database
@@ -210,6 +209,7 @@ class Larva:
         if auth:
             self.auth = auth
         else:
+            from larva.auth import Auth
             self.auth = Auth(app_name)
 
         for m in modules_list:
