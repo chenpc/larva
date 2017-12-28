@@ -117,43 +117,6 @@
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-envelope"></i> <b class="caret"></b></a>
                     <ul class="dropdown-menu message-dropdown">
-                        <script type="text/javascript">
-                            $(function() {
-                                $("li.message-preview").hide();
-                                var actionurl = "/api/event/get_event";
-                                var DataObj = {"date": "{{ time }}", "limit": 5};
-                                token = localStorage.getItem('access_token');
-                                var poll_log = function () {
-                                    $.ajax({
-                                        url: actionurl,
-                                        type: 'post',
-                                        dataType: 'json',
-                                        contentType: "application/json",
-                                        data: JSON.stringify(DataObj),
-                                        headers: {
-                                            'Authorization': "Token " + token,
-                                        },
-                                        success: function (data, status) {
-                                            var $li = $("li.message-preview:first");
-                                            var log_list = data.data;
-                                            $("li.message-preview").hide();
-                                            for (var m in log_list) {
-                                                log = log_list[m];
-                                                $li.find('h5.media-heading').find('strong').text(log.title);
-                                                $li.find('p.small').text(log.date);
-                                                $li.find('p').next().text(log.message);
-                                                $li.show();
-                                                $li = $li.next();
-                                            }
-                                        },
-                                        error: function (XMLHttpRequest, textStatus, errorThrown) {
-
-                                        }
-                                    });
-                                }
-                                setInterval(poll_log, 50000);
-                            });
-                        </script>
                         <li class="message-preview">
                             <a href="#">
                                 <div class="media">

@@ -258,7 +258,11 @@ class Larva:
                     raise FunctionNameError("No such function")
 
                 f = getattr(module, func_name)
-                args, kwargs = parse_request(f, request)
+                if len(request.files) == 0:
+                    args, kwargs = parse_request(f, request)
+                else:
+                    args=None
+                    kwargs=request.files.to_dict()
 
 
                 if args:
