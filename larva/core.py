@@ -315,15 +315,16 @@ class Larva:
         @self.auth.basic_auth.login_required
         def auth():
             user = self.auth.basic_auth.username()
-            if user in self.auth.users_db:
-                return self.auth.users_db[user]
+            return self.get_auth(user)
 
-            uid = str(uuid.uuid4())
-            self.auth.users_db[user] = uid
-            self.auth.token_db[uid] = user
-            self.auth.users_db.save()
-            self.auth.token_db.save()
-            return uid
+        @self.app.route('/get_auth', methods=['GET'])
+        def auth_get():
+            result = OrderedDict()
+            username = request.args.get('username')
+            password = request.args.get('password')
+            user = self.auth.verify_password(username, password)
+            result['token'] = self.get_auth(user)
+            return json.dumps(result, default=larva_format)
 
         @self.app.route('/doc', methods=['GET'])
         def doc(module_name=None, func_name=None):
@@ -365,6 +366,20 @@ class Larva:
                 if k[0] != '_':
                     result[k]= parse_doc(getattr(self.modules[module_name], k))['description']
             return json.dumps(result, default=larva_format)
+
+    def get_auth(self, user):
+        if user is not None:
+            if user in self.auth.users_db:
+                return self.auth.users_db[user]
+            else:
+                uid = str(uuid.uuid4())
+                self.auth.users_db[user] = uid
+                self.auth.token_db[uid] = user
+                self.auth.users_db.save()
+                self.auth.token_db.save()
+                return uid
+        else:
+            return None
 
     def run(self):
         self.app.run(host=self.host, port=self.port)

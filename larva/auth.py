@@ -14,19 +14,20 @@ class Auth(object):
         self.token_auth = HTTPTokenAuth('Token')
 
         @self.basic_auth.verify_password
-        def verify_password(username, password):
-            p = pam.pam()
-            if p.authenticate(username, password, service="login"):
-                return username
-            else:
-                return None
+        def _verify_password(username, password):
+            return self.verify_password(username, password)
 
         @self.token_auth.verify_token
-        def verify_token(token):
+        def _verify_token(token):
             if token in self.token_db:
                 g.username = self.token_db[token]
                 g.token = token
                 return True
             return False
 
-
+    def verify_password(self, username, password):
+        p = pam.pam()
+        if p.authenticate(username, password, service="login"):
+            return username
+        else:
+            return None
