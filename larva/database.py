@@ -4,8 +4,8 @@ from sqlalchemy.ext.declarative import declarative_base
 import os
 import sys
 
-if os.path.exists('/media/realroot'):
-    engine = create_engine('sqlite:////media/realroot/larva.db', convert_unicode=True)
+if os.path.exists('/var/db'):
+    engine = create_engine('sqlite:////var/db/larva.db', convert_unicode=True)
 else:
     engine = create_engine('sqlite:////tmp/larva.db', convert_unicode=True)
 
